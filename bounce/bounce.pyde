@@ -2,17 +2,21 @@ import random
 g = 0.01
 wind = 0.0
 
+# electron shell radius
+er = 1
+
 #random number
 rn = lambda a,b: map(random.random(),0,1,a,b)
+cbrt = lambda a: pow(a,1.0/3.0)
 
 elements = {
             
-            1:{'symbol':'H', 'd':sqrt(10.0), 'col':[255,0,0]},
-            2:{'symbol':'He', 'd':sqrt(20.0), 'col':[255,192,203]},
-            3:{'symbol':'Li', 'd':sqrt(30.0), 'col':[175,175,175]},
-            4:{'symbol':'Be', 'd':sqrt(40.0), 'col':[230,150,255]},
-            5:{'symbol':'B', 'd':sqrt(50.0), 'col':[105,110,160]},
-            6:{'symbol':'C', 'd':sqrt(60.0), 'col':[0,0,0]}
+            1:{'symbol':'H', 'd':cbrt(10.0)+er, 'col':[255,0,0]},
+            2:{'symbol':'He', 'd':cbrt(20.0)+er, 'col':[255,192,203]},
+            3:{'symbol':'Li', 'd':cbrt(30.0)+er, 'col':[175,175,175]},
+            4:{'symbol':'Be', 'd':cbrt(40.0)+er, 'col':[230,150,255]},
+            5:{'symbol':'B', 'd':cbrt(50.0)+er, 'col':[105,110,160]},
+            6:{'symbol':'C', 'd':cbrt(60.0)+er, 'col':[0,0,0]}
 
             }
 class Circle:
@@ -22,7 +26,7 @@ class Circle:
         self.d = elements[self.ele]['d']
         self.v = PVector(vx,vy)
         self.a = PVector(ax,ay)
-        self.m = PI*pow((self.d/2),2)
+        self.m = 4.0/3.0*PI*pow((self.d/2),3)
         #mechanical energy (initial)
         self.mE = 0.5*self.m*self.v.mag()**2+(height-self.pos.y)*self.m*g
         
