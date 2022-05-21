@@ -3,7 +3,7 @@ g = 0.01
 wind = 0.0
 
 # electron shell radius
-er = 1
+er = 1.0
 
 #random number
 rn = lambda a,b: map(random.random(),0,1,a,b)
@@ -11,30 +11,50 @@ cbrt = lambda a: pow(a,1.0/3.0)
 
 elements = {
             
-            1:{'symbol':'H', 'd':cbrt(10.0)+er, 'col':[255,0,0]},
-            2:{'symbol':'He', 'd':cbrt(20.0)+er, 'col':[255,192,203]},
-            3:{'symbol':'Li', 'd':cbrt(30.0)+er, 'col':[175,175,175]},
-            4:{'symbol':'Be', 'd':cbrt(40.0)+er, 'col':[230,150,255]},
-            5:{'symbol':'B', 'd':cbrt(50.0)+er, 'col':[105,110,160]},
-            6:{'symbol':'C', 'd':cbrt(60.0)+er, 'col':[0,0,0]}
+            1:{'symbol':'H', 'd':cbrt(10.0)+er, 'freq': 75, 'vfx':{'col':[255,255,255], 'stroke':1}},
+            2:{'symbol':'He', 'd':cbrt(20.0)+er, 'freq': 35, 'vfx':{'col':[255,192,203], 'stroke':0}},
+            
+            3:{'symbol':'Li', 'd':cbrt(30.0)+2*er, 'freq': 20, 'vfx':{'col':[175,175,175], 'stroke':0}},
+            4:{'symbol':'Be', 'd':cbrt(40.0)+2*er, 'freq': 10, 'vfx':{'col':[230,150,255], 'stroke':0}},
+            5:{'symbol':'B', 'd':cbrt(50.0)+2*er, 'freq': 10, 'vfx':{'col':[105,110,160], 'stroke':0}},
+            6:{'symbol':'C', 'd':cbrt(60.0)+2*er, 'freq': 40, 'vfx':{'col':[0,0,0], 'stroke':0}},
+            7:{'symbol':'N', 'd':cbrt(70.0)+2*er, 'freq': 50, 'vfx':{'col':[0,0,255], 'stroke':0}},
+            8:{'symbol':'O', 'd':cbrt(80.0)+2*er, 'freq': 30, 'vfx':{'col':[255,0,0], 'stroke':0}},
+            9:{'symbol':'F', 'd':cbrt(90.0)+2*er, 'freq': 10, 'vfx':{'col':[0,200,0], 'stroke':0}},
+            10:{'symbol':'Ne', 'd':cbrt(100.0)+2*er, 'freq': 15, 'vfx':{'col':[255,100,0], 'stroke':0}}
 
             }
+t_freq = []
+for i in range(1,len(elements)+1):
+    for j in range(elements[i]['freq']):
+        t_freq.append(i)
+    
 class Circle:
-    def __init__(self, x, y, d=10.0, vx=2.0, vy=0.0, ax=wind, ay=g, ele=1):
-        self.ele = random.randint(1,len(elements))
+    def __init__(self, x, y, d=10.0, vx=2.0, vy=0.0, ax=wind, ay=g, ele=1, ch=0):
+        self.ele = t_freq[random.randint(0,len(t_freq)-1)]
         self.pos = PVector(x,y)
-        self.d = elements[self.ele]['d']
-        self.v = PVector(vx,vy)
-        self.a = PVector(ax,ay)
-        self.m = 4.0/3.0*PI*pow((self.d/2),3)
-        #mechanical energy (initial)
+        self.d = elements[self.ele]['d'] # diameter
+        self.v = PVector(vx,vy) # velocity
+        self.a = PVector(ax,ay) # acceleration
+        self.m = 4.0/3.0*PI*pow((self.d/2),3) # mass
+        self.ch = 0 # charge
+        # mechanical energy (initial)
         self.mE = 0.5*self.m*self.v.mag()**2+(height-self.pos.y)*self.m*g
         
         # idt=inverse dt (1/dt) -> bigger = more precise
         self.idt = 5.0
-        self.col = elements[self.ele]['col']
+        self.col = elements[self.ele]['vfx']['col']
         
     def render(self):
+        """
+        stroke(0)
+        strokeWeight(0.5)
+        """
+        if elements[self.ele]['vfx']['stroke'] == 0:
+            noStroke()
+        elif elements[self.ele]['vfx']['stroke'] != 0:
+            stroke(0)
+            strokeWeight(0.2)
         fill(self.col[0],self.col[1],self.col[2])
         circle(self.pos.x,self.pos.y,self.d)
         
@@ -77,7 +97,7 @@ n = 30
 def setup():
     size(1000, 700)
     background(255)
-    noStroke()
+    #noStroke()
     for i in range(n):
         list1.append(Circle(width/2+rn(-width/2,width/2),height/2+rn(-height/2,height/2),d=rn(1,15),vx=rn(-6.0,6.0),vy=rn(-6.0,6.0)))
         
