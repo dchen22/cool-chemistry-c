@@ -1,9 +1,11 @@
 import random
-g = 0.01
+g = 0.1
 wind = 0.0
 
 # electron shell radius
 er = 1.0
+
+
 
 #random number
 rn = lambda a,b: map(random.random(),0,1,a,b)
@@ -24,6 +26,7 @@ elements = {
             10:{'symbol':'Ne', 'd':cbrt(100.0)+2*er, 'freq': 15, 'vfx':{'col':[255,100,0], 'stroke':0}}
 
             }
+# compiles a list of elements, where each element appears at a specific frequency
 t_freq = []
 for i in range(1,len(elements)+1):
     for j in range(elements[i]['freq']):
@@ -31,7 +34,7 @@ for i in range(1,len(elements)+1):
     
 class Circle:
     def __init__(self, x, y, d=10.0, vx=2.0, vy=0.0, ax=wind, ay=g, ele=1, ch=0):
-        self.ele = t_freq[random.randint(0,len(t_freq)-1)]
+        self.ele = t_freq[random.randint(0,len(t_freq)-1)] # element number
         self.pos = PVector(x,y)
         self.d = elements[self.ele]['d'] # diameter
         self.v = PVector(vx,vy) # velocity
@@ -64,13 +67,13 @@ class Circle:
             self.v.add(self.a*(1/self.idt))
         self.a = PVector(wind,g)
         
-        if self.pos.x > width - self.d/2:
+        if self.pos.x > box_BR.x - self.d/2:
             self.v.x = -abs(self.v.x)
-        elif self.pos.x < self.d/2:
+        elif self.pos.x < box_UL.x + self.d/2:
             self.v.x = abs(self.v.x)
-        if self.pos.y > height - self.d/2:
+        if self.pos.y > box_BR.y - self.d/2:
             self.v.y = -abs(self.v.y)
-        elif self.pos.y < self.d/2:
+        elif self.pos.y < box_UL.y + self.d/2:
             self.v.y = abs(self.v.y)
         self.mE = 0.5*self.m*self.v.mag()**2+(height-self.pos.y)*self.m*g
         # mechanical energy of each particle
@@ -92,20 +95,33 @@ class Circle:
         
 
 list1 = []
-n = 30
+n = 12
+
+w = 1000
+h = 700
+# box width and height
+bw = 850
+bh = 600
 
 def setup():
-    size(1000, 700)
+    size(w, h)
     background(255)
     #noStroke()
     for i in range(n):
-        list1.append(Circle(width/2+rn(-width/2,width/2),height/2+rn(-height/2,height/2),d=rn(1,15),vx=rn(-6.0,6.0),vy=rn(-6.0,6.0)))
+        list1.append(Circle(width/2+rn(-bw/2,bw/2),height/2+rn(-bh/2,bh/2),d=rn(1,15),vx=rn(-6.0,6.0),vy=rn(-6.0,6.0)))
         
-            
+
+box_UL = PVector((w-bw)/2,(h-bh)/2)
+box_UR = PVector((w-bw)/2+bw,(h-bh)/2)
+box_BR = PVector((w-bw)/2+bw,(h-bh)/2+bh)
+box_BL = PVector((w-bw)/2,(h-bh)/2+bh)
     
 def draw():
     mE = 0
     background(255)
+    fill(255)
+    stroke(1)
+    rect(box_UL.x,box_UL.y,bw,bh)
     for i in list1:
         i.render()
         i.move()
