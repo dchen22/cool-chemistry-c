@@ -5,7 +5,7 @@ wind = 0.0
 # electron shell radius
 er = 1.0
 
-
+mv = PVector(0.0,0.0) # speed of mouse dragged
 
 #random number
 rn = lambda a,b: map(random.random(),0,1,a,b)
@@ -53,6 +53,7 @@ class Circle:
         stroke(0)
         strokeWeight(0.5)
         """
+        stroke(0) # not sure if this is necessary but just in case
         if elements[self.ele]['vfx']['stroke'] == 0:
             noStroke()
         elif elements[self.ele]['vfx']['stroke'] != 0:
@@ -68,13 +69,21 @@ class Circle:
         self.a = PVector(wind,g)
         
         if self.pos.x > box_BR.x - self.d/2:
+            #self.pos.x = box_BR.x - self.d/2
             self.v.x = -abs(self.v.x)
+            self.v.add(mv)
         elif self.pos.x < box_UL.x + self.d/2:
+            #self.pos.x = box_UL.x + self.d/2
             self.v.x = abs(self.v.x)
+            self.v.add(mv)
         if self.pos.y > box_BR.y - self.d/2:
+            #self.pos.y = box_BR.y - self.d/2
             self.v.y = -abs(self.v.y)
+            self.v.add(mv)
         elif self.pos.y < box_UL.y + self.d/2:
+            #self.pos.y = box_UL.y + self.d/2
             self.v.y = abs(self.v.y)
+            self.v.add(mv)
         self.mE = 0.5*self.m*self.v.mag()**2+(height-self.pos.y)*self.m*g
         # mechanical energy of each particle
         # print(0.5*self.m*self.v.mag()**2+(height-self.pos.y)*self.m*g)
@@ -115,13 +124,17 @@ box_UL = PVector((w-bw)/2,(h-bh)/2)
 box_UR = PVector((w-bw)/2+bw,(h-bh)/2)
 box_BR = PVector((w-bw)/2+bw,(h-bh)/2+bh)
 box_BL = PVector((w-bw)/2,(h-bh)/2+bh)
+box_d = PVector(0,0) # box's displacement
     
 def draw():
     mE = 0
     background(255)
+    pushMatrix()
+    translate(box_d.x,box_d.y)
     fill(255)
     stroke(1)
     rect(box_UL.x,box_UL.y,bw,bh)
+    popMatrix()
     for i in list1:
         i.render()
         i.move()
@@ -130,5 +143,16 @@ def draw():
     for j in range(len(list1)):
         for k in range(j+1,len(list1)):
             list1[k].check_collide(list1[j])
+    
+def mouseDragged():
+    box_UL.x,box_UR.x,box_BR.x,box_BL.x = box_UL.x+mouseX-pmouseX,box_UR.x+mouseX-pmouseX,box_BR.x+mouseX-pmouseX,box_BL.x+mouseX-pmouseX
+    box_UL.y,box_UR.y,box_BR.y,box_BL.y = box_UL.y+mouseY-pmouseY,box_UR.y+mouseY-pmouseY,box_BR.y+mouseY-pmouseY,box_BL.y+mouseY-pmouseY
+    global mv
+    mv = PVector(float(mouseX-pmouseX),float(mouseY-pmouseY))
+
+def mouseReleased():
+    global mv
+    mv = PVector(0,0)
+    
 
     
